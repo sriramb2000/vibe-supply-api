@@ -1,23 +1,5 @@
-const functions = require('firebase-functions')
 const crypto = require('crypto');
-
-// Firebase Setup
-const admin = require('firebase-admin');
-// @ts-ignore
-const serviceAccount = require('../service-account.json');
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: `https://${process.env.GCLOUD_PROJECT}.firebaseio.com`,
-});
-
-// Spotify OAuth 2 setup
-// TODO: Configure the `spotify.client_id` and `spotify.client_secret` Google Cloud environment variables.
-const SpotifyWebApi = require('spotify-web-api-node');
-const Spotify = new SpotifyWebApi({
-  clientId: functions.config().spotify.client_id,
-  clientSecret: functions.config().spotify.client_secret,
-  redirectUri: `https://${process.env.GCLOUD_PROJECT}.firebaseapp.com/popup.html`,
-});
+const { admin, spotify: Spotify, db } = require('../common');
 
 // Scopes to request.
 const OAUTH_SCOPES = [
@@ -102,7 +84,7 @@ async function createFirebaseAccount(spotifyID, displayName, photoURL, email, ac
     const uid = spotifyID;
 
     // Save the access token to the Firebase Realtime Database.
-    const databaseTask = admin.firestore().doc(`users/${spotifyID}`).set({
+    const databaseTask = db.doc(`users/${spotifyID}`).set({
         accessToken,
         refreshToken
     });
