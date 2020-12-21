@@ -30,7 +30,7 @@ function Demo() {
     this.signedInCard = document.getElementById('demo-signed-in-card');
 
     // Bind events.
-    this.signInButton.addEventListener('click', this.signIn.bind(this));
+    // this.signInButton.addEventListener('click', this.signIn.bind(this));
     this.signOutButton.addEventListener('click', this.signOut.bind(this));
     this.deleteButton.addEventListener('click', this.deleteAccount.bind(this));
     firebase.auth().onAuthStateChanged(this.onAuthStateChanged.bind(this));
@@ -39,6 +39,7 @@ function Demo() {
 
 // Triggered on Firebase auth state change.
 Demo.prototype.onAuthStateChanged = function(user) {
+  console.log('Auth state change', user);
   if (user) {
     this.nameContainer.innerText = user.displayName;
     this.emailContainer.innerText = user.email;
@@ -53,10 +54,10 @@ Demo.prototype.onAuthStateChanged = function(user) {
 };
 
 // Initiates the sign-in flow using Spotify sign in in a popup.
-Demo.prototype.signIn = function() {
-  // Open the popup that will start the auth flow.
-  window.open('popup.html', 'name', 'height=585,width=400');
-};
+// Demo.prototype.signIn = function() {
+//   // Open the popup that will start the auth flow.
+//   window.open('popup.html', 'name', 'height=585,width=400');
+// };
 
 // Signs-out of Firebase.
 Demo.prototype.signOut = function() {

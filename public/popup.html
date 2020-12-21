@@ -50,7 +50,9 @@ Please wait...
   function tokenReceived(data) {
     if (data.token) {
       firebase.auth().signInWithCustomToken(data.token).then(function() {
-        window.close();
+        console.log('Confirmed');
+        console.log(firebase.auth().currentUser)
+        window.location.replace(`https://${window.location.hostname}`)
       });
     } else {
       console.error(data);
