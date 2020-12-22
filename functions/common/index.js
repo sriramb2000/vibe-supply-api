@@ -1,12 +1,10 @@
 const functions = require('firebase-functions')
-
 // Firebase Setup
 const admin = require('firebase-admin');
 // @ts-ignore
 const serviceAccount = require('../service-account.json');
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: `https://${process.env.GCLOUD_PROJECT}.firebaseio.com`,
+  credential: admin.credential.cert(serviceAccount)
 });
 
 // Spotify OAuth 2 setup
@@ -15,11 +13,11 @@ const SpotifyWebApi = require('spotify-web-api-node');
 const Spotify = new SpotifyWebApi({
   clientId: functions.config().spotify.client_id,
   clientSecret: functions.config().spotify.client_secret,
-  redirectUri: `https://${process.env.GCLOUD_PROJECT}.firebaseapp.com/popup.html`,
+  redirectUri: `https://${process.env.GCLOUD_PROJECT}.web.app/popup.html`,
 });
 
 module.exports = {
     admin,
     spotify: Spotify,
-    db: admin.firestore()
+    db: admin.firestore(),
 }
