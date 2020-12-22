@@ -17,7 +17,6 @@ const OAUTH_SCOPES = [
 const redirect = (req, res) => {
     const state = req.cookies.state || crypto.randomBytes(20).toString('hex');
     console.log('Setting verification state:', state);
-    res.cookie('state', state.toString(), {maxAge: 3600000, secure: true, httpOnly: true});
     const authorizeURL = Spotify.createAuthorizeURL(OAUTH_SCOPES, state.toString());
     res.redirect(authorizeURL);
 }
@@ -84,10 +83,17 @@ async function createFirebaseAccount(spotifyID, displayName, photoURL, email, ac
     const uid = spotifyID;
 
     // Save the access token to the Firebase Realtime Database.
-    const databaseTask = db.doc(`users/${spotifyID}`).set({
+    const userFirestoreRef = db.doc(`users/${spotifyID}`);
+    const userVibesCollectionRef = userFirestoreRef.collection('vibes').doc('placeholder')
+    const userFollowingCollectionRef = userFirestoreRef.collection('following').doc('placeholder')
+    
+    const userDatabaseTask = userFirestoreRef.set({
         accessToken,
         refreshToken
     });
+    const userVibesDatabaseTask = userVibesCollectionRef.set({})
+    const userFollowingDatabaseTask = userFollowingCollectionRef.set({})
+    
     // Create or update the user account.
     const userCreationTask = admin.auth().updateUser(uid, {
         displayName: displayName,
@@ -109,7 +115,8 @@ async function createFirebaseAccount(spotifyID, displayName, photoURL, email, ac
     });
 
     // Wait for all async tasks to complete, then generate and return a custom auth token.
-    await Promise.all([userCreationTask, databaseTask]);
+    await Promise.all([userCreationTask, userDatabaseTask]);
+    await Promise.all([userVibesDatabaseTask, userFollowingDatabaseTask]);
     // Create a Firebase custom auth token.
     const token = await admin.auth().createCustomToken(uid);
     console.log('Created Custom token for UID "', uid, '" Token:', token);
