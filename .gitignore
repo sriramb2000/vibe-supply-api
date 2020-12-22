@@ -1,4 +1,5 @@
 functions/node_modules
 functions/service-account.json
 functions/.runtimeconfig.json
+functions/ui-debug.log
 .firebase/
